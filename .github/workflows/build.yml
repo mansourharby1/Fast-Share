@@ -23,11 +23,19 @@ jobs:
         with:
           gradle-version: 8.7
 
+      - name: Unzip project if needed
+        run: |
+          if [ -z "$(find . -name settings.gradle | head -n 1)" ]; then
+            ZIP=$(find . -name '*.zip' | head -n 1)
+            echo "Unzipping $ZIP"
+            unzip -o "$ZIP" -d project_unzipped
+          fi
+
       - name: Build debug APK
         run: |
           SETTINGS=$(find . -name settings.gradle | head -n 1)
           if [ -z "$SETTINGS" ]; then
-            echo "settings.gradle not found. Repo structure:"
+            echo "settings.gradle not found"
             find . -maxdepth 3 -not -path './.git/*'
             exit 1
           fi
