@@ -24,10 +24,18 @@ jobs:
           gradle-version: 8.7
 
       - name: Build debug APK
-        run: gradle assembleDebug --no-daemon
+        run: |
+          SETTINGS=$(find . -name settings.gradle | head -n 1)
+          if [ -z "$SETTINGS" ]; then
+            echo "settings.gradle not found. Repo structure:"
+            find . -maxdepth 3 -not -path './.git/*'
+            exit 1
+          fi
+          cd "$(dirname "$SETTINGS")"
+          gradle assembleDebug --no-daemon
 
       - name: Upload APK
         uses: actions/upload-artifact@v4
         with:
           name: FastShare-apk
-          path: app/build/outputs/apk/debug/*.apk
+          path: "**/build/outputs/apk/debug/*.apk"
